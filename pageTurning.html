@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>pageTurning</title>
+  <meta charset="utf-8">
+    <style type="text/css">
+      .todos-filter div{
+        display: inline-block;
+        background: #546eb7;
+        width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+      }
+      .todos-filter{
+        text-align: center;
+      }
+      .page-turning{
+        text-align: center;
+        margin-top: 200px;
+        height: 220px;
+      }
+      .page-turning div {
+        letter-spacing:2px;
+      }
+    </style>
+</head>
+<body>
+    <div class="page-turning" id="pageTurning">     
+      
+    </div>
+    <div id="todo-filter" class="todos-filter">
+
+    </div>
+    <script type="text/javascript">
+      const PAGE = {
+        data: {
+          count: 74,
+          currentPage: 1,
+          pageSize: 10,
+        },
+        init: function() {
+          this.render();
+          this.bind();
+        },
+        bind: function() {
+          let todoFilter = document.getElementById('todo-filter');
+          this.onEventLister(todoFilter,'click','filter-btn',this.filterTodo);
+        },
+        onEventLister: function(parentNode,action,childClassName,callback) {
+        parentNode.addEventListener(action,function(e){
+          e.target.className.indexOf(childClassName) >= 0 && callback(e);
+          })
+         },
+        render: function() {
+          let currentPage = PAGE.data.currentPage;
+          let count = PAGE.data.count;
+          let pageSize= PAGE.data.pageSize
+          let tmpArr = [];
+          for (let i = 0; i < count; i++) {
+            let str = `第${i + 1}页`
+            tmpArr.push(str)
+          }
+          let total =Math.ceil(count/pageSize);
+
+          let totalArr=[];
+          for (let i = 0; i < total; i++) {
+            let totaStr = `${i+1}`
+            totalArr.push(totaStr)
+          }
+
+          let showArr = tmpArr.filter((data,index) => {
+            return index >= (currentPage-1)*pageSize && index < currentPage*pageSize ;
+          })
+
+          let serialMap = totalArr.map((data) =>{
+            return`<div class="filter-btn" data-id="${data}">${data}</div>`
+          }).join('');
+
+          let showArrMap = showArr.map((data) => {
+            return `<div>${data}</div>`
+          }).join('');
+
+          let listElement = document.getElementById('pageTurning');
+          listElement.innerHTML = showArrMap;
+          let todoFilter = document.getElementById('todo-filter');
+          todoFilter.innerHTML = serialMap;            
+        },
+        filterTodo:function(e){
+         let filterItem = e.target;
+         let filter = filterItem.dataset.id;
+         PAGE.data.currentPage = Number(filter);
+         PAGE.render(); 
+        }  
+      }
+
+      PAGE.init();
+    </script>
+</body>
+</html>
